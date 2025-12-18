@@ -16,11 +16,18 @@ function App() {
           >
             Toggle canvas
           </button>
-          <span>Canvas is {toggle ? "mounted" : "unmounted"}</span>
+          <span>
+            Canvas is{" "}
+            <span
+              className={`${toggle ? "text-green-700" : "text-red-700"} font-bold`}
+            >
+              {toggle ? "mounted" : "unmounted"}
+            </span>
+          </span>
         </div>
       </div>
       {toggle && (
-        <PixiThreeCanvas className="w-[80lvw] h-[80lvh]">
+        <PixiThreeCanvas className="h-[calc(100lvh-8rem)]">
           <SpinnyCube />
         </PixiThreeCanvas>
       )}
