@@ -44,7 +44,7 @@ export function SpinnyCube(props: ThreeElements["mesh"]) {
       onPointerOut={(event) => hover(false)}
       material={material}
     >
-      <boxGeometry args={[1, 1, 1]} />
+      <boxGeometry args={[2, 2, 2]} />
       <PixiTexture ref={pixiTexture}>
         <SpinnyCubeTexture />
       </PixiTexture>
