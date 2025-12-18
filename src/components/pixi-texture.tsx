@@ -12,9 +12,11 @@ import {
 import { type ExternalTexture } from "three";
 import tunnel from "tunnel-rat";
 
+import { PixiTextureContext } from "./pixi-texture-context";
+
 extend({ Container });
 
-export interface PixiTextureTunnelContextValue {
+interface PixiTextureTunnelContextValue {
   tunnel: ReturnType<typeof tunnel>;
 }
 
@@ -46,22 +48,6 @@ export function PixiTextureRenderer() {
       <tunnel.Out />
     </pixiContainer>
   );
-}
-
-export interface PixiTextureContextValue {
-  render: () => unknown;
-}
-
-const PixiTextureContext = createContext<PixiTextureContextValue | null>(null);
-
-export function usePixiTextureContext() {
-  const context = useContext(PixiTextureContext);
-  if (context === null) {
-    throw Error(
-      "usePixiTextureContext() must be called within a <PixiTexture />",
-    );
-  }
-  return context;
 }
 
 export interface PixiTextureProps extends PropsWithChildren {
