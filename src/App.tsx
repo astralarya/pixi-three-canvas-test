@@ -7,15 +7,17 @@ function App() {
 
   return (
     <>
-      <h1 className="text-2xl">Pixi + Three</h1>
-      <div className="flex items-center gap-4">
-        <button
-          className="bg-neutral-500 p-2 rounded-sm"
-          onClick={() => setToggle((x) => !x)}
-        >
-          Toggle canvas
-        </button>
-        <span>Canvas is {toggle ? "mounted" : "unmounted"}</span>
+      <div className="bg-neutral-300 p-4">
+        <h1 className="text-2xl">Pixi + Three</h1>
+        <div className="mt-2 flex items-center gap-4">
+          <button
+            className="bg-amber-500 hover:bg-amber-400 cursor-pointer p-2 rounded-sm"
+            onClick={() => setToggle((x) => !x)}
+          >
+            Toggle canvas
+          </button>
+          <span>Canvas is {toggle ? "mounted" : "unmounted"}</span>
+        </div>
       </div>
       {toggle && (
         <PixiThreeCanvas className="w-[80lvw] h-[80lvh]">
