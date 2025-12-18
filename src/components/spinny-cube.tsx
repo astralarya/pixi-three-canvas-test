@@ -18,7 +18,10 @@ export function SpinnyCube(props: ThreeElements["mesh"]) {
   const [hovered, hover] = useState(false);
   const [clicked, click] = useState(false);
   // Subscribe this component to the render-loop, rotate the mesh every frame
-  useFrame((state, delta) => (ref.current!.rotation.x += delta));
+  useFrame((state, delta) => {
+    ref.current!.rotation.x += delta;
+    ref.current!.rotation.y += delta * 0.5;
+  });
 
   const pixiTexture = useRef(new ExternalTexture());
   const [material, setMaterial] = useState<Material>();
@@ -51,29 +54,37 @@ export function SpinnyCube(props: ThreeElements["mesh"]) {
 
 function SpinnyCubeTexture() {
   const { render } = usePixiTextureContext();
-  const star = useRef<Graphics>(null!);
+  const star1 = useRef<Graphics>(null!);
+  const star2 = useRef<Graphics>(null!);
   const time = useRef(0);
 
   useTick((ticker) => {
     time.current += ticker.deltaMS;
-    star.current.rotation = ((time.current % 2000) / 2000) * 2 * Math.PI;
+    star1.current.rotation = ((time.current % 4000) / 4000) * 2 * Math.PI;
+    star2.current.scale = Math.abs(((time.current % 5000) - 2500) / 5000) + 0.5;
     render();
   });
 
   function drawBackground(graphics: Graphics) {
     graphics.clear();
-    graphics.rect(0, 0, 64, 64).fill(0x000000);
+    graphics.rect(0, 0, 128, 128).fill(0x000000);
   }
 
-  function drawStar(graphics: Graphics) {
+  function drawStar1(graphics: Graphics) {
     graphics.clear();
-    graphics.star(32, 32, 5, 16).stroke({ width: 4, color: 0xffffff });
+    graphics.star(64, 64, 5, 32).stroke({ width: 8, color: 0xff0000 });
+  }
+
+  function drawStar2(graphics: Graphics) {
+    graphics.clear();
+    graphics.star(64, 64, 5, 32).stroke({ width: 8, color: 0x0000ff });
   }
 
   return (
     <>
       <pixiGraphics draw={drawBackground} />
-      <pixiGraphics ref={star} draw={drawStar} origin={32} />
+      <pixiGraphics ref={star1} draw={drawStar1} origin={64} />
+      <pixiGraphics ref={star2} draw={drawStar2} origin={64} />
     </>
   );
 }
