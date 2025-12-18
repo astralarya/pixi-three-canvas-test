@@ -12,10 +12,12 @@
   "dependencies": {
     "@pixi/react": "^8.0.5",
     "@react-three/fiber": "^9.4.2",
+    "@tailwindcss/vite": "^4.1.18",
     "its-fine": "^2.0.0",
     "pixi.js": "^8.14.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "tailwindcss": "^4.1.18",
     "three": "^0.182.0",
     "tunnel-rat": "^0.1.2"
   },
