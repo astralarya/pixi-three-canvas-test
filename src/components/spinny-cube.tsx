@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { type ThreeElements, useFrame } from "@react-three/fiber";
-import { ExternalTexture, Material, type Mesh } from "three";
+import { ExternalTexture, Material, Texture, type Mesh } from "three";
 import { texture, uv } from "three/tsl";
 import { MeshBasicNodeMaterial } from "three/webgpu";
 import { PixiTexture } from "./pixi-texture";
 import { Graphics } from "pixi.js";
 import { extend, useTick } from "@pixi/react";
 
-import { usePixiTextureContext } from "./pixi-texture-context";
+import { usePixiTextureContext } from "./pixi-texture-react-hooks";
 
 extend({ Graphics });
 
@@ -23,7 +23,7 @@ export function SpinnyCube(props: ThreeElements["mesh"]) {
     ref.current!.rotation.y += delta * 0.5;
   });
 
-  const pixiTexture = useRef(new ExternalTexture());
+  const pixiTexture = useRef<Texture>(null!);
   const [material, setMaterial] = useState<Material>();
 
   useEffect(() => {
@@ -44,11 +44,20 @@ export function SpinnyCube(props: ThreeElements["mesh"]) {
       onPointerOut={(event) => hover(false)}
       material={material}
     >
-      <boxGeometry args={[2, 2, 2]} />
+      <boxGeometry args={[1, 1, 1]} />
+      {/* <PixiTexture ref={pixiTexture} width={64} height={64}> */}
       <PixiTexture ref={pixiTexture}>
         <SpinnyCubeTexture />
       </PixiTexture>
     </mesh>
+  );
+}
+
+function randomColor() {
+  return (
+    0xff0000 * Math.random() +
+    0x00ff00 * Math.random() +
+    0x0000ff * Math.random()
   );
 }
 
@@ -61,7 +70,8 @@ function SpinnyCubeTexture() {
   useTick((ticker) => {
     time.current += ticker.deltaMS;
     star1.current.rotation = ((time.current % 4000) / 4000) * 2 * Math.PI;
-    star2.current.scale = Math.abs(((time.current % 5000) - 2500) / 5000) + 0.5;
+    star2.current.scale =
+      Math.abs(((time.current % 5000) - 500) / 5000) * 4 + 0.5;
     render();
   });
 
@@ -72,12 +82,12 @@ function SpinnyCubeTexture() {
 
   function drawStar1(graphics: Graphics) {
     graphics.clear();
-    graphics.star(64, 64, 5, 32).stroke({ width: 8, color: 0xff0000 });
+    graphics.star(64, 64, 5, 32).stroke({ width: 8, color: randomColor() });
   }
 
   function drawStar2(graphics: Graphics) {
     graphics.clear();
-    graphics.star(64, 64, 5, 32).stroke({ width: 8, color: 0x0000ff });
+    graphics.star(64, 64, 5, 32).stroke({ width: 8, color: randomColor() });
   }
 
   return (
