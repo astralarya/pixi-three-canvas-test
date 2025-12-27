@@ -28,7 +28,15 @@ function App() {
       </div>
       {toggle && (
         <PixiThreeCanvas className="h-[calc(100lvh-8rem)]">
-          <SpinnyCube />
+          <SpinnyCube position={[-2, -2, 0]} />
+          <SpinnyCube position={[0, -2, 0]} />
+          <SpinnyCube position={[2, -2, 0]} />
+          <SpinnyCube position={[-2, 0, 0]} />
+          <SpinnyCube position={[0, 0, 0]} />
+          <SpinnyCube position={[2, 0, 0]} />
+          <SpinnyCube position={[-2, 2, 0]} />
+          <SpinnyCube position={[0, 2, 0]} />
+          <SpinnyCube position={[2, 2, 0]} />
         </PixiThreeCanvas>
       )}
     </>
