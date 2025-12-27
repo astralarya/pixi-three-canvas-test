@@ -105,17 +105,19 @@ function PixiTextureInternal({
   const [mask, setMask] = useState<Graphics>();
 
   useLayoutEffect(() => {
-    const mask = new Graphics();
-    mask
-      .rect(
-        0,
-        0,
-        width ?? containerRef.current.width,
-        height ?? containerRef.current.height,
-      )
-      .fill(0xffffff);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMask(mask);
+    setMask((prev) => {
+      const graphics = prev ?? new Graphics();
+      graphics.clear();
+      graphics
+        .rect(
+          0,
+          0,
+          width ?? containerRef.current.width,
+          height ?? containerRef.current.height,
+        )
+        .fill(0xffffff);
+      return graphics;
+    });
     pixiTextureRef.current.resize(
       width ?? containerRef.current.width,
       height ?? containerRef.current.height,
