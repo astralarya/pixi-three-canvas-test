@@ -72,8 +72,7 @@ function SpinnyCubeTexture() {
   useTick((ticker) => {
     time.current += ticker.deltaMS;
     star1.current.rotation = ((time.current % 4000) / 4000) * 2 * Math.PI;
-    star2.current.scale =
-      Math.abs(((time.current % 5000) - 500) / 5000) * 4 + 0.5;
+    star2.current.scale = Math.sin((time.current / 1000 / 2) * Math.PI) + 1.5;
     render();
   });
 
