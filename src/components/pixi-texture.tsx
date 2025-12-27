@@ -1,18 +1,27 @@
 import { extend, useApplication } from "@pixi/react";
-import { Container, type GpuTextureSystem, RenderTexture } from "pixi.js";
+import {
+  Container,
+  type GpuTextureSystem,
+  Graphics,
+  RenderTexture,
+  TextureSource,
+} from "pixi.js";
 import {
   createContext,
   type PropsWithChildren,
-  type RefObject,
+  type Ref,
   useContext,
   useEffect,
   useId,
+  useImperativeHandle,
+  useLayoutEffect,
   useRef,
+  useState,
 } from "react";
-import { type ExternalTexture } from "three";
+import { ExternalTexture, type Texture } from "three";
 import tunnel from "tunnel-rat";
 
-import { PixiTextureContext } from "./pixi-texture-context";
+import { PixiTextureContext } from "./pixi-texture-react-hooks.ts";
 
 extend({ Container });
 
@@ -51,53 +60,86 @@ export function PixiTextureRenderer() {
 }
 
 export interface PixiTextureProps extends PropsWithChildren {
-  ref: RefObject<ExternalTexture>;
+  ref: Ref<Texture>;
+  width?: number;
+  height?: number;
 }
 
-export function PixiTexture({ ref, children }: PixiTextureProps) {
+export function PixiTexture({
+  ref,
+  children,
+  width,
+  height,
+}: PixiTextureProps) {
   const { tunnel } = usePixiTextureTunnelContext();
   const key = useId();
   return (
     <tunnel.In>
-      <PixiTextureInternal key={key} ref={ref}>
+      <PixiTextureInternal key={key} ref={ref} width={width} height={height}>
         {children}
       </PixiTextureInternal>
     </tunnel.In>
   );
 }
 
-function PixiTextureInternal({ ref, children }: PixiTextureProps) {
+function PixiTextureInternal({
+  ref,
+  children,
+  width,
+  height,
+}: PixiTextureProps) {
   const app = useApplication();
   const containerRef = useRef<Container>(null!);
-  const pixiTextureRef = useRef(new RenderTexture());
+  const pixiTextureRef = useRef(
+    new RenderTexture({
+      dynamic: true,
+      source: new TextureSource({ width, height }),
+    }),
+  );
+  const texture = useRef(new ExternalTexture());
+
+  useImperativeHandle(ref, () => {
+    return texture.current;
+  });
+
+  const [mask, setMask] = useState<Graphics>();
+
+  useLayoutEffect(() => {
+    const mask = new Graphics();
+    mask
+      .rect(
+        0,
+        0,
+        width ?? containerRef.current.width,
+        height ?? containerRef.current.height,
+      )
+      .fill(0xffffff);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMask(mask);
+    pixiTextureRef.current.resize(
+      width ?? containerRef.current.width,
+      height ?? containerRef.current.height,
+    );
+    const gpuTexture = (
+      app.app.renderer.texture as GpuTextureSystem
+    ).getGpuSource(pixiTextureRef.current._source);
+    texture.current.sourceTexture = gpuTexture;
+  }, [app.app.renderer.texture, height, width]);
 
   function render() {
-    if (
-      pixiTextureRef.current.width !== containerRef.current.width ||
-      pixiTextureRef.current.height !== containerRef.current.height
-    ) {
-      pixiTextureRef.current.resize(
-        containerRef.current.width,
-        containerRef.current.height,
-      );
-    }
     app.app.renderer.render({
       container: containerRef.current,
       target: pixiTextureRef.current,
     });
-    const gpuTexture = (
-      app.app.renderer.texture as GpuTextureSystem
-    ).getGpuSource(pixiTextureRef.current._source);
-    if (ref.current.sourceTexture !== gpuTexture) {
-      ref.current.sourceTexture = gpuTexture;
-    }
   }
 
   useEffect(render);
 
   return (
     <PixiTextureContext value={{ render }}>
-      <pixiContainer ref={containerRef}>{children}</pixiContainer>
+      <pixiContainer ref={containerRef} mask={mask}>
+        {children}
+      </pixiContainer>
     </PixiTextureContext>
   );
 }
