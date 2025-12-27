@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { type ThreeElements, useFrame } from "@react-three/fiber";
-import { ExternalTexture, Material, Texture, type Mesh } from "three";
-import { texture, uv } from "three/tsl";
-import { MeshBasicNodeMaterial } from "three/webgpu";
+import { Material, type Mesh } from "three";
+import { MeshBasicNodeMaterial, TextureNode } from "three/webgpu";
 import { PixiTexture } from "./pixi-texture";
 import { Graphics } from "pixi.js";
 import { extend, useTick } from "@pixi/react";
@@ -23,13 +22,13 @@ export function SpinnyCube(props: ThreeElements["mesh"]) {
     ref.current!.rotation.y += delta * 0.5;
   });
 
-  const pixiTexture = useRef<Texture>(null!);
+  const pixiTexture = useRef<TextureNode>(null!);
   const [material, setMaterial] = useState<Material>();
 
   useEffect(() => {
     setMaterial(() => {
       const material = new MeshBasicNodeMaterial();
-      material.colorNode = texture(pixiTexture.current, uv());
+      material.colorNode = pixiTexture.current;
       return material;
     });
   }, []);
@@ -45,8 +44,11 @@ export function SpinnyCube(props: ThreeElements["mesh"]) {
       material={material}
     >
       <boxGeometry args={[1, 1, 1]} />
-      {/* <PixiTexture ref={pixiTexture} width={64} height={64}> */}
-      <PixiTexture ref={pixiTexture}>
+      <PixiTexture
+        ref={pixiTexture}
+        width={clicked ? 64 : 128}
+        height={clicked ? 64 : 128}
+      >
         <SpinnyCubeTexture />
       </PixiTexture>
     </mesh>

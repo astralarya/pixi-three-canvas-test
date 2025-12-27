@@ -18,10 +18,12 @@ import {
   useRef,
   useState,
 } from "react";
-import { ExternalTexture, type Texture } from "three";
+import { ExternalTexture, Texture } from "three";
 import tunnel from "tunnel-rat";
 
 import { PixiTextureContext } from "./pixi-texture-react-hooks.ts";
+import type { TextureNode } from "three/webgpu";
+import { texture, uv } from "three/tsl";
 
 extend({ Container });
 
@@ -60,9 +62,9 @@ export function PixiTextureRenderer() {
 }
 
 export interface PixiTextureProps extends PropsWithChildren {
-  ref: Ref<Texture>;
-  width?: number;
-  height?: number;
+  ref: Ref<TextureNode>;
+  width: number;
+  height: number;
 }
 
 export function PixiTexture({
@@ -90,16 +92,19 @@ function PixiTextureInternal({
 }: PixiTextureProps) {
   const app = useApplication();
   const containerRef = useRef<Container>(null!);
-  const pixiTextureRef = useRef(
-    new RenderTexture({
-      dynamic: true,
-      source: new TextureSource({ width, height }),
-    }),
+  const pixiTextureRef = useRef(new RenderTexture());
+  const textureRef = useRef(texture(new Texture(), uv()));
+
+  useEffect(
+    () => () => {
+      pixiTextureRef.current.destroy();
+      textureRef.current.value.dispose();
+    },
+    [],
   );
-  const texture = useRef(new ExternalTexture());
 
   useImperativeHandle(ref, () => {
-    return texture.current;
+    return textureRef.current;
   });
 
   const [mask, setMask] = useState<Graphics>();
@@ -118,14 +123,15 @@ function PixiTextureInternal({
         .fill(0xffffff);
       return graphics;
     });
-    pixiTextureRef.current.resize(
-      width ?? containerRef.current.width,
-      height ?? containerRef.current.height,
-    );
+    pixiTextureRef.current.destroy();
+    pixiTextureRef.current = new RenderTexture({
+      source: new TextureSource({ width, height }),
+    });
     const gpuTexture = (
       app.app.renderer.texture as GpuTextureSystem
     ).getGpuSource(pixiTextureRef.current._source);
-    texture.current.sourceTexture = gpuTexture;
+    textureRef.current.value.dispose();
+    textureRef.current.value = new ExternalTexture(gpuTexture);
   }, [app.app.renderer.texture, height, width]);
 
   function render() {
