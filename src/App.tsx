@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { PixiThreeCanvas } from "./components/pixi-three-canvas";
+import { PixiThreeCanvas } from "./components/pixi-three/pixi-three-canvas";
 import { SpinnyCube } from "./components/spinny-cube";
+import { ThreeScene } from "./components/pixi-three/three-scene";
 
 function App() {
   const [toggle, setToggle] = useState(true);
@@ -28,15 +29,17 @@ function App() {
       </div>
       {toggle && (
         <PixiThreeCanvas className="h-[calc(100lvh-8rem)]">
-          <SpinnyCube position={[-2, -2, 0]} />
-          <SpinnyCube position={[0, -2, 0]} />
-          <SpinnyCube position={[2, -2, 0]} />
-          <SpinnyCube position={[-2, 0, 0]} />
-          <SpinnyCube position={[0, 0, 0]} />
-          <SpinnyCube position={[2, 0, 0]} />
-          <SpinnyCube position={[-2, 2, 0]} />
-          <SpinnyCube position={[0, 2, 0]} />
-          <SpinnyCube position={[2, 2, 0]} />
+          <ThreeScene>
+            <SpinnyCube position={[-2, -2, 0]} />
+            <SpinnyCube position={[0, -2, 0]} />
+            <SpinnyCube position={[2, -2, 0]} />
+            <SpinnyCube position={[-2, 0, 0]} />
+            <SpinnyCube position={[0, 0, 0]} />
+            <SpinnyCube position={[2, 0, 0]} />
+            <SpinnyCube position={[-2, 2, 0]} />
+            <SpinnyCube position={[0, 2, 0]} />
+            <SpinnyCube position={[2, 2, 0]} />
+          </ThreeScene>
         </PixiThreeCanvas>
       )}
     </>

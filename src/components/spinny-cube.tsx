@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { type ThreeElements, useFrame } from "@react-three/fiber";
 import { Material, type Mesh } from "three";
 import { MeshBasicNodeMaterial, TextureNode } from "three/webgpu";
-import { PixiTexture } from "./pixi-texture";
 import { Graphics } from "pixi.js";
 import { extend, useTick } from "@pixi/react";
 
-import { usePixiTextureContext } from "./pixi-texture-react-hooks";
+import { PixiTexture } from "./pixi-three/pixi-texture-react";
+import { usePixiTextureContext } from "./pixi-three/pixi-texture-react-hooks";
 
 extend({ Graphics });
 
